@@ -1,5 +1,7 @@
 package com.medinar.hackerrank.challenges.regex.html_attributes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,27 +12,31 @@ import java.util.regex.Pattern;
  */
 public class HtmlAttribute {
 
+    // [<]([\w]+)([\s]?([\w]+)[=]?["][\w\d\/\.:-]*["])*[>]?
+//<p><a href="http://www.quackit.com/html/tutorial/html_links.cfm" title="ats">Example Link</a></p>
+//<div class="more-info"><a href="http://www.quackit.com/html/examples/html_links_examples.cfm" pop="">More Link Examples...</a></div>
     static final Pattern PATTERN = Pattern.compile("([<]([\\w]+))?([\\s]?([\\w]+)[\\s]?[=])*");
 
     public void detect(String input) {
         Matcher m = PATTERN.matcher(input);
-        String out = "";
+        List<String> tags = new ArrayList<>();
+        StringBuilder sb = new StringBuilder(input.length());
         while (m.find()) {
             if (!m.group().isEmpty()) {
-                if (!m.group(2).isEmpty() && null == m.group(4)) {
-                    System.out.println(m.group(2) + ":");
+                if (null != m.group(2) && null == m.group(4)) {
+                    tags.add(m.group(2) + ":");
                 }
-                else if (!m.group(2).isEmpty() && !m.group(4).isEmpty()) {
-                    out = out + m.group(2) + ":" + m.group(4);
+                else if (null != m.group(2) && null != m.group(4)) {
+                    sb.append(m.group(2)).append(":").append(m.group(4));
                 }
-                else if (null == m.group(2) && !m.group(4).isEmpty()) {
-                    out = out + m.group(4);
+                else if (null == m.group(2) && null != m.group(4)) {
+                    sb.append(",").append(m.group(4));
                 }
             }
         }
-        if (!out.isEmpty()) {
-            System.out.println(out);
-        }
+        tags.add(sb.toString());
+//        Collections.sort(tags);
+        tags.stream().forEach(tag -> System.out.println(tag));
     }
 
 }

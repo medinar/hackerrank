@@ -1,5 +1,7 @@
 package com.medinar.hackerrank.challenges.regex.html_attributes;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -37,9 +39,11 @@ public class HtmlAttributeTest {
     @Test
     public void testDetect() {
         System.out.println("detect");
-        String input = "<p><a href=\"http://www.quackit.com/html/tutorial/html_links.cfm\">Example Link</a></p>";
+        List<String> inputs = new ArrayList<>();
+        inputs.add("<p><a href=\"http://www.quackit.com/html/tutorial/html_links.cfm\">Example Link</a></p>");
+        inputs.add("<div class=\"more-info\"><a href=\"http://www.quackit.com/html/examples/html_links_examples.cfm\">More Link Examples...</a></div>        ");
         HtmlAttribute instance = new HtmlAttribute();
-        instance.detect(input);
+        inputs.stream().forEach(input -> instance.detect(input));
     }
 
 }
