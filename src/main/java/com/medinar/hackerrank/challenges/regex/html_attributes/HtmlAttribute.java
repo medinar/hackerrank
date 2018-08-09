@@ -1,6 +1,7 @@
 package com.medinar.hackerrank.challenges.regex.html_attributes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,31 +13,34 @@ import java.util.regex.Pattern;
  */
 public class HtmlAttribute {
 
-    // [<]([\w]+)([\s]?([\w]+)[=]?["][\w\d\/\.:-]*["])*[>]?
-//<p><a href="http://www.quackit.com/html/tutorial/html_links.cfm" title="ats">Example Link</a></p>
-//<div class="more-info"><a href="http://www.quackit.com/html/examples/html_links_examples.cfm" pop="">More Link Examples...</a></div>
-    static final Pattern PATTERN = Pattern.compile("([<]([\\w]+))?([\\s]?([\\w]+)[\\s]?[=])*");
+    static final Pattern TAGS_PATTERN = Pattern.compile("[<]([\\w]+)([\\s]?[\\w]+[\\s]?[=][\\s]?[\"'\\w\\d\\s\\/\\.:\\-=\\[\\]\\?;&]*)?[>]");
+    static final Pattern ATTRS_PATTERN = Pattern.compile("([\\w]+)[\\s]?[=][\\s]?[\"']");
 
-    public void detect(String input) {
-        Matcher m = PATTERN.matcher(input);
-        List<String> tags = new ArrayList<>();
-        StringBuilder sb = new StringBuilder(input.length());
-        while (m.find()) {
-            if (!m.group().isEmpty()) {
-                if (null != m.group(2) && null == m.group(4)) {
-                    tags.add(m.group(2) + ":");
+    public void detect(List<String> inputs) {
+        List<String> lines = new ArrayList<>();
+        inputs.stream().forEach(input -> {
+            Matcher m = TAGS_PATTERN.matcher(input);
+            while (m.find()) {
+                String tag = m.group(1) + ":";
+                String attr = m.group(2);
+                if (null != attr) {
+                    Matcher mAttr = ATTRS_PATTERN.matcher(attr);
+                    String attrs = "";
+                    while (mAttr.find()) {
+                        if (attrs.isEmpty()) {
+                            attrs = attrs + mAttr.group(1);
+                        }
+                        else {
+                            attrs = attrs + "," + mAttr.group(1);
+                        }
+                    }
+                    tag = tag + attrs;
                 }
-                else if (null != m.group(2) && null != m.group(4)) {
-                    sb.append(m.group(2)).append(":").append(m.group(4));
-                }
-                else if (null == m.group(2) && null != m.group(4)) {
-                    sb.append(",").append(m.group(4));
-                }
+                lines.add(tag);
             }
-        }
-        tags.add(sb.toString());
-//        Collections.sort(tags);
-        tags.stream().forEach(tag -> System.out.println(tag));
+        });
+        Collections.sort(lines);
+        lines.stream().distinct().forEach(s -> System.out.println(s));
     }
 
 }
